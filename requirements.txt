@@ -1,4 +1,4 @@
-dash
+streamlit
 pandas
-dash-auth
-gunicorn
+streamlit-authenticator
+streamlit-aggrid
