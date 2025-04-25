@@ -34,13 +34,13 @@ df.rename(columns={
     'status': 'Status',
     'rating': 'Rating',
     'last_team': 'Last Team',
-    'new_team': 'First Team'
+    'new_team': 'New Team'
 }, inplace=True)
 
 # 2) Reorder columns
 base_cols = [
     "name", "POS", "Height", "Weight", "Class", "Status",
-    "Last Team", "First Team", "Rating",
+    "Last Team", "New Team", "Rating",
     # stats
     "GP", "GS", "MPG", "PPG", "FG%", "3FG%", "FT%",
     "RPG", "APG", "TOPG", "SPG", "BPG",
@@ -55,7 +55,7 @@ df = df[[c for c in (base_cols + detail_only) if c in df.columns]]
 stat_cols = [
     c for c in base_cols if c not in [
         'name','POS','Height','Weight','Class','Status',
-        'Last Team','First Team','Rating'
+        'Last Team','New Team','Rating'
     ] and c in df.columns
 ]
 for col in stat_cols:
