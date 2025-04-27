@@ -91,8 +91,11 @@ gb.configure_column(
     headerName='Player',
     cellRenderer='agGroupCellRenderer',
     cellRendererParams={'suppressCount': True},
-    width=200,
-    flex=0
+    width=120,
+    minWidth=80,
+    maxWidth=220,
+    flex=0,
+    pinned='left'
 )
 # hide detail-only fields
 for col in detail_only:
@@ -149,12 +152,9 @@ gb.configure_grid_options(
     }
 )
 
-# build final grid options
 grid_options = gb.build()
-# shrink detail panel height to content
 grid_options['detailRowHeight'] = 140
 
-# auto-size parent columns on first render
 auto_size = JsCode("""
 function(params) {
   const cols = params.columnApi.getAllColumns().map(c => c.getColId());
@@ -170,6 +170,7 @@ st.markdown("""
 - Use the funnel icon on **POS, Class, Status, Height, Weight, Rating** to filter  
 - **Stats** use numeric ≥ filters  
 """)
+
 AgGrid(
     df,
     gridOptions=grid_options,
