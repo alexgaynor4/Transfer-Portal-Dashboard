@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 PAGE_URL   = 'https://www.on3.com/transfer-portal/wire/basketball/'
 OUTPUT_CSV = 'portal_players.csv'
-MAX_PAGES  = 50   # safety cap
+MAX_PAGES  = 50
 
 scraper = cloudscraper.create_scraper(
     browser={'custom': (
@@ -30,8 +30,6 @@ def parse_page(html):
         def t(sel):
             el = li.select_one(sel)
             return el.get_text(strip=True) if el else ''
-
-        # last / new team from <img> titles
         last_img = li.select_one('div.TransferPortalItem_lastTeamWrapper__dusYk img')
         last_team = last_img.get('title', '') if last_img else ''
 
@@ -74,7 +72,6 @@ for page_num in range(1, MAX_PAGES+1):
 
 print(f"Total players scraped: {len(all_players)}")
 
-# write to CSV
 with open(OUTPUT_CSV, 'w', newline='', encoding='utf-8') as f:
     writer = csv.DictWriter(f, fieldnames=all_players[0].keys())
     writer.writeheader()

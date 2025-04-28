@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import time
 import requests
 import pandas as pd
@@ -10,8 +9,6 @@ BASE_URL = (
     "https://www.cbssports.com/college-basketball/stats/player/"
     "{category}/all-conf/all-pos/all/"
 )
-
-# The five stat categories we want
 CATEGORIES = [
     "scoring",
     "rebounds",
@@ -38,17 +35,14 @@ def scrape_category(category: str) -> pd.DataFrame:
         if table is None:
             break
 
-        # Build header row once
         if headers is None:
             ths = table.find('thead').find_all('th')
-            # skip the first TH (“Player”), then take the first token of each header cell
             stats_cols = [
                 ' '.join(th.get_text(separator=' ').split()).split()[0]
                 for th in ths[1:]
             ]
             headers = ['Name', 'ProfileURL', 'Position', 'Team'] + stats_cols
 
-        # Extract each player row
         body = table.find('tbody')
         if not body:
             break
@@ -69,14 +63,12 @@ def scrape_category(category: str) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=headers) if headers else pd.DataFrame()
 
 def main():
-    # 1) scrape each category into its own DataFrame
     dfs = []
     for cat in CATEGORIES:
         df_cat = scrape_category(cat)
         if df_cat.empty:
             print(f"⚠️  No data for category {cat}")
             continue
-        # prefix every stat col so they don't collide on merge
         stat_cols = df_cat.columns.tolist()[4:]
         df_cat = df_cat.rename(
             columns={c: f"{cat}_{c}" for c in stat_cols}
@@ -87,14 +79,12 @@ def main():
         print("No data scraped; exiting.")
         return
 
-    # 2) merge all DataFrames on Name/ProfileURL/Position/Team
     key_cols = ['Name', 'ProfileURL', 'Position', 'Team']
     combined = reduce(
         lambda left, right: pd.merge(left, right, on=key_cols, how='outer'),
         dfs
     )
 
-    # 3) simplify column names by stripping "<category>_" prefixes
     new_cols = []
     for col in combined.columns:
         if "_" in col:
@@ -105,9 +95,8 @@ def main():
         new_cols.append(col)
     combined.columns = new_cols
 
-    # 4) write out the final CSV
     combined.to_csv("player_stats.csv", index=False)
-    print(f"\n✅ Saved {len(combined)} players to player_stats.csv")
+    print(f"\nSaved {len(combined)} players to player_stats.csv")
 
 if __name__ == "__main__":
     main()
